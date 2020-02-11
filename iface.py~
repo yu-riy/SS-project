@@ -1,0 +1,62 @@
+"""
+Программа - монитор курса валют Национального Банка Украины.
+iface.py - интерфейс программы.
+functions.py - функциональная часть.
+/data - файловое хранилище, где каждому файлу соответствует отдельная валюта
+    на сайте НБУ
+
+"""
+from functions import *
+
+main_function = Money()
+
+while True:
+    user_choice = int(input("Пожалуйста, выберите функцию: \n\
+    1: Вывести список валют на сайте НБУ \n\
+    2: Вывести информацию по конкретной валюте из базы  \n\
+    3: Обновить базу валют \n\
+    4: Проверить сайт НБУ на наличие новых валют \n\
+    5: Показать минимальное и максимальное значение курса валюты \n\
+    "))
+    
+    if user_choice == 1:
+        main_function.print_currency_names()
+        
+    elif user_choice == 2:
+        name = input("Введите индекс валюты (для помощи выберите опцию 1 в основном меню)\n")
+        currency = Currency(name)
+        user_continue = input("Вывести все записи? y/n \n")
+        if user_continue in ["y", "Y"]:
+            currency.get_currency_actual(name)
+        else:
+            while True:
+                number_input = input("Сколько последних записей из файла вывести?")
+                if number_input.isdigit() and int(number_input) >= 1:
+                    number = int(number_input)
+                    break
+                else:
+                    print("Пожалуйста, введите целое число больше нуля")
+                    continue
+            currency.get_currency_actual(name, number)
+            
+    elif user_choice == 3:
+        currency_names = main_function.get_data()
+        filenames = main_function.get_filenames()
+        main_function.get_updates(currency_names, filenames)
+        
+    elif user_choice == 4:
+        currency_names = main_function.get_data()
+        filenames = main_function.get_filenames()
+        main_function.check_if_new(currency_names, filenames)
+        
+    else:
+        name = input("Введите индекс валюты (для помощи выберите опцию 1 в основном меню)\n")
+        currency = Currency(name)
+        currency.get_extremum(name)
+        
+    user_continue = input("\nХотите продолжить? y/n \n")
+    if user_continue in ["y", "Y"]:
+        continue
+    else:
+        break
+    
